@@ -179,7 +179,7 @@ void * allocateObject( size_t size )
 	struct ObjectFooter * footer_original = (struct ObjectFooter*) foot;
 	//Find remainder of memory left after subtracting the required space for the malloc call
 	
-	while((traverse_p != head) && (traverse_p->_next->_allocated != 2)) {
+	/*while((traverse_p != head) && (traverse_p->_next->_allocated != 2)) {
 		size_t remainder = traverse_p->_objectSize - roundedSize; 
 		
 		//if can be split
@@ -214,7 +214,7 @@ void * allocateObject( size_t size )
 			
 		}
 		traverse_p = traverse_p->_next;
-	}
+	}*/
 
   // Store the size in the header
 //  struct ObjectHeader * o = (struct ObjectHeader *) _mem;
