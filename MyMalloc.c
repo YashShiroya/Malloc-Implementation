@@ -26,7 +26,7 @@ const int NumberOfFreeLists = 1;
 // Header of an object. Used both when the object is allocated and freed
 struct ObjectHeader {
     size_t _objectSize;         // Real size of the object.
-    int _allocated;             // 1 = yes, 0 = no 2 = sentinel
+    int _allocated;             // 1 = yes, 0 = no, 2 = sentinel
     struct ObjectHeader * _next;       // Points to the next object in the freelist (if free).
     struct ObjectHeader * _prev;       // Points to the previous object.
 };
@@ -125,9 +125,9 @@ void initialize()
   atexit( atExitHandlerInC );
 
   //establish fence posts
-  struct ObjectFooter * fencepost1 = (struct ObjectFooter *)_mem;
-  fencepost1->_allocated = 1;
-  fencepost1->_objectSize = 123456789;
+  struct ObjectFooter * fencepost1 = (struct ObjectFooter *)_mem;							//Dummy Footer
+  fencepost1->_allocated = 1;																//Allocated flag to true so that no venture beyond this point
+  fencepost1->_objectSize = 123456789;														//Arbitrary size
   char * temp = 
       (char *)_mem + (2*sizeof(struct ObjectFooter)) + sizeof(struct ObjectHeader) + ArenaSize;
   struct ObjectHeader * fencepost2 = (struct ObjectHeader *)temp;
@@ -168,19 +168,67 @@ void * allocateObject( size_t size )
   size_t roundedSize = (size + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter) + 7) & ~7;
 
   // Naively get memory from the OS every time
-  void * _mem = getMemoryFromOS( roundedSize );
+//  void * _mem = getMemoryFromOS( roundedSize );		//rem
+
+	//Add the new memory chunk block later, for now just use the current chunk
+	struct ObjectHeader * traverse_p = (struct ObjectHeader*) _freeList;
+	struct ObjectHeader * head = &_freeListSentinel;
+	
+	//Need char cast?______________________________________________________________________________________________
+	char * foot = (char*)traverse_p + traverse_p->_objectSize - sizeof(struct ObjectFooter); 
+	struct ObjectFooter * footer_original = (struct ObjectFooter*) foot;
+	//Find remainder of memory left after subtracting the required space for the malloc call
+	
+	while((traverse_p != head) && (traverse_p->_next->_allocated != 2)) {
+		size_t remainder = traverse_p->_objectSize - roundedSize; 
+		
+		//if can be split
+		if(remainder > 8) {
+			struct ObjectHeader * temp = (struct ObjectHeader*) traverse_p;
+			  
+			traverse_p = traverse_p + sizeof(struct ObjectHeader) + size; //traverse_p at new footer position
+			
+			struct ObjectFooter * new_footer = (struct ObjectFooter *) traverse_p; //Placed footer
+			struct ObjectHeader * new_header = (struct ObjectHeader *) traverse_p + sizeof(struct ObjectFooter);
+			
+			//Change new header and footer fields
+			new_header->_next = temp->_next;
+			new_header->_prev = temp->_prev;
+			new_header->_objectSize = remainder;
+			new_header->_allocated = 0;
+			
+			new_footer->_objectSize = roundedSize;
+			new_footer->_allocated = 1;
+			
+			//Change old footer struct fields
+		 	footer_original->_objectSize = remainder;
+		 	footer_original->_allocated = 0;
+						
+			//Change old header struct fields
+			temp->_next->_prev = (struct ObjectHeader*)new_header;
+			temp->_prev->_next = (struct ObjectHeader*)new_header;
+			//temp->_next = (struct ObjectHeader*) new_header;
+			temp->_objectSize = size + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter);
+			temp->_allocated = 1;
+			
+			
+		}
+		traverse_p = traverse_p->_next;
+	}
 
   // Store the size in the header
-  struct ObjectHeader * o = (struct ObjectHeader *) _mem;
+//  struct ObjectHeader * o = (struct ObjectHeader *) _mem;
 
-  o->_objectSize = roundedSize;
+//  o->_objectSize = roundedSize;
 
   pthread_mutex_unlock(&mutex);
 
   // Return a pointer to usable memory
-  return (void *) (o + 1);
+  return;//(void *) (o + 1);
 
 }
+
+
 
 void freeObject( void * ptr )
 {
