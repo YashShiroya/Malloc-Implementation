@@ -180,11 +180,17 @@ void * allocateObject( size_t size )
 	while(list_ptr->_allocated != 2) {
 		size_t remainder = list_ptr->_objectSize - roundedSize;	//Check if correct
 		
-		if(list_ptr->_objectSize > roundedSize) {
+		if(list_ptr->_objectSize >= roundedSize) {
+			//Case 1: Split results in second block reuseable
 			if(remainder > 8) {
 				flag = 1;
-				break;
+				//break;
 			}
+			//Case 2: Split results in second block unuseable, so return entire block
+			else {
+				flag = 2;
+			}
+			break;
 		}
 		list_ptr = list_ptr->_next;
 	}
