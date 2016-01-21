@@ -238,9 +238,11 @@ void * allocateObject( size_t size )
 		
 	}
 	if(flag == 2) {
-	
-		//list_ptr->_prev->_next = list_ptr->_next;
-		//list_ptr->_next->_prev = list_ptr->_prev;
+		
+		/*if(list_ptr->_next != NULL && list_ptr->_prev != NULL) {
+			list_ptr->_prev->_next = list_ptr->_next;
+			list_ptr->_next->_prev = list_ptr->_prev;
+		}*/
 		
 		/*//Overwriting old footer
 		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
