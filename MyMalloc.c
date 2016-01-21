@@ -227,8 +227,11 @@ void * allocateObject( size_t size )
 		list_ptr->_objectSize = roundedSize;
 		
 		//next/prev of list_ptr____________________________________________________________________
+		pthread_mutex_unlock(&mutex);
 		
+		return (void *) (temp + 1);
 	}
+	
 	
 	//Need char cast?______________________________________________________________________________________________	
 
@@ -243,7 +246,8 @@ void * allocateObject( size_t size )
   pthread_mutex_unlock(&mutex);
 
   // Return a pointer to usable memory
-  return (void *) (temp + 1);
+  
+  //return (void *) (temp + 1);
 
 }
 
