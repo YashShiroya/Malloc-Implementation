@@ -178,7 +178,9 @@ void * allocateObject( size_t size )
 	int flag = -1;
 	
 	while(list_ptr->_allocated != 2) {
-		size_t remainder = list_ptr->_objectSize - roundedSize;	//Check if correct
+		size_t remainder = list_ptr->_objectSize - roundedSize;	//Check if correct_______________________________________________________________________________
+		
+		remainder = remainder - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
 		
 		if(list_ptr->_objectSize >= roundedSize) {
 			//Case 1: Split results in second block reuseable
@@ -195,6 +197,12 @@ void * allocateObject( size_t size )
 		list_ptr = list_ptr->_next;
 	}
 	
+	//flag = 1, hence split and reuse remainder
+	if(flag == 1) {
+		char * new_footer_position = (char*)list_ptr + sizeof(struct ObjectHeader) + size;
+		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
+		char * new_header_position = (char*)list_ptr + sizeof(struct ObjectHeader) + size + sizeof(struct ObjectFooter);
+	}
 	
 	//Need char cast?______________________________________________________________________________________________	
 
