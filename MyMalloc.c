@@ -239,15 +239,15 @@ void * allocateObject( size_t size )
 	}
 	if(flag == 2) {
 	
-		list_ptr->_prev->_next = list_ptr->_next;
-		list_ptr->_next->_prev = list_ptr->_prev;
+		//list_ptr->_prev->_next = list_ptr->_next;
+		//list_ptr->_next->_prev = list_ptr->_prev;
 		
-		//Overwriting old footer
+		/*//Overwriting old footer
 		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
 		
 		struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
 		
-		old_footer->_allocated = 1;
+		old_footer->_allocated = 1;*/
 		list_ptr->_allocated = 1;
 		//list_ptr->_objectSize = roundedSize;
 	}
@@ -265,7 +265,7 @@ void * allocateObject( size_t size )
   pthread_mutex_unlock(&mutex);
 
   // Return a pointer to usable memory
-  if(flag == 1) return (void *) (temp + 1);
+  if(flag == 1 || flag == 2) return (void *) (temp + 1);
 
 }
 
