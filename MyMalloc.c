@@ -171,14 +171,27 @@ void * allocateObject( size_t size )
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
 
 	//Add the new memory chunk block later, for now just use the current chunk
-	struct ObjectHeader * traverse_p = (struct ObjectHeader*) _freeList;
-	struct ObjectHeader * temp = (struct ObjectHeader*) traverse_p;
-	struct ObjectHeader * head = &_freeListSentinel;
+	struct ObjectHeader * list_ptr = _freeList->_next;
+	struct ObjectHeader * temp = list_ptr;
+	struct ObjectHeader * head = _freeList->_next;
 	size_t remainder;
+	int flag = -1;
+	
+	while(list_ptr->_allocated != 2) {
+		size_t remainder = list_ptr->_objectSize - roundedSize;	//Check if correct
+		
+		if(list_ptr->_objectSize > roundedSize) {
+			if(remainder > 8) {
+				flag = 1;
+				break;
+			}
+		}
+		list_ptr = list_ptr->_next;
+	}
+	
 	
 	//Need char cast?______________________________________________________________________________________________	
-	
-	int test;
+
 	//Find remainder of memory left after subtracting the required space for the malloc call
 			
 			
