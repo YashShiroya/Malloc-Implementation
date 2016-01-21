@@ -172,11 +172,8 @@ void * allocateObject( size_t size )
   // Naively get memory from the OS every time
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
 
-	//Add the new memory chunk block later, for now just use the current chunk
 	struct ObjectHeader * list_ptr = _freeList->_next;
 	struct ObjectHeader * temp = list_ptr;
-	struct ObjectHeader * head = _freeList->_next;
-	size_t remainder;
 	int flag = -1;
 	
 	while(list_ptr->_allocated != 2) {
@@ -185,15 +182,18 @@ void * allocateObject( size_t size )
 		remainder = remainder - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
 		
 		if(list_ptr->_objectSize >= roundedSize) {
+		
 			//Case 1: Split results in second block reuseable
 			if(remainder > 8) {
 				flag = 1;
 				//break;
 			}
+			
 			//Case 2: Split results in second block unuseable, so return entire block
 			else {
 				flag = 2;
 			}
+			
 			break;
 		}
 		list_ptr = list_ptr->_next;
