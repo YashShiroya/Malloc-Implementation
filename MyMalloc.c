@@ -210,6 +210,14 @@ void * allocateObject( size_t size )
 		char * new_header_position = (char*)list_ptr + roundedSize;
 		struct ObjectHeader * new_header = (struct ObjectHeader*) new_header_position;
 		
+		//Overwriting old footer
+		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
+		
+		struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
+		
+		old_footer->_allocated = 0;
+		old_footer->_objectSize = list_ptr->_objectSize - roundedSize;
+		
 		//Set header/footer fields
 		new_footer->_allocated = 1;
 		new_footer->_objectSize = roundedSize;
@@ -229,7 +237,20 @@ void * allocateObject( size_t size )
 		//next/prev of list_ptr____________________________________________________________________
 		
 	}
+	if(flag == 2) {
 	
+		list_ptr->_prev->_next = list_ptr->_next;
+		list_ptr->_next->_prev = list_ptr->_prev;
+		
+		//Overwriting old footer
+		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
+		
+		struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
+		
+		old_footer->_allocated = 1;
+		list_ptr->_allocated = 1;
+		//list_ptr->_objectSize = roundedSize;
+	}
 	
 	//Need char cast?______________________________________________________________________________________________	
 
