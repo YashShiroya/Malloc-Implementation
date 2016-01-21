@@ -166,6 +166,8 @@ void * allocateObject( size_t size )
   // Add the ObjectHeader/Footer to the size and round the total size up to a multiple of
   // 8 bytes for alignment.
   size_t roundedSize = (size + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter) + 7) & ~7;
+  
+  size_t raw_size = roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
 
   // Naively get memory from the OS every time
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
@@ -199,9 +201,33 @@ void * allocateObject( size_t size )
 	
 	//flag = 1, hence split and reuse remainder
 	if(flag == 1) {
-		char * new_footer_position = (char*)list_ptr + sizeof(struct ObjectHeader) + size;
+	
+		//Place new footer
+		char * new_footer_position = (char*)list_ptr + sizeof(struct ObjectHeader) + raw_size;
 		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
-		char * new_header_position = (char*)list_ptr + sizeof(struct ObjectHeader) + size + sizeof(struct ObjectFooter);
+		
+		//Place new header
+		char * new_header_position = (char*)list_ptr + roundedSize;
+		struct ObjectHeader * new_header = (struct ObjectHeader*) new_header_position;
+		
+		//Set header/footer fields
+		new_footer->_allocated = 1;
+		new_footer->_objectSize = roundedSize;
+		
+		new_header->_allocated = 0;
+		new_header->_objectSize = list_ptr->_objectSize - roundedSize;
+		new_header->_next = list_ptr->_next;
+		new_header->_prev = list_ptr->_prev; 
+		
+		//List changes
+		list_ptr->_prev->_next = new_header;
+		list_ptr->_next->_prev = new_header;
+		
+		list_ptr->_allocated = 1;
+		list_ptr->_objectSize = roundedSize;
+		
+		//next/prev of list_ptr____________________________________________________________________
+		
 	}
 	
 	//Need char cast?______________________________________________________________________________________________	
