@@ -234,41 +234,33 @@ void * allocateObject( size_t size )
 		list_ptr->_allocated = 1;
 		list_ptr->_objectSize = roundedSize;
 		
+		pthread_mutex_unlock(&mutex);		
+		return (void *) (list_ptr + 1);
+		
 		//next/prev of list_ptr____________________________________________________________________
 		
 	}
 	if(flag == 2) {
-		
-		//if(list_ptr->_next != NULL && list_ptr->_prev != NULL) {
+
 			list_ptr->_prev->_next = list_ptr->_next;
 			list_ptr->_next->_prev = list_ptr->_prev;
 			list_ptr->_allocated = 1;
-		//}
-		
-		/*//Overwriting old footer
-		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
-		
-		struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
-		
-		old_footer->_allocated = 1;*/
-		
-		//list_ptr->_objectSize = roundedSize;
-	}
-	
-	//Need char cast?______________________________________________________________________________________________	
-
-	//Find remainder of memory left after subtracting the required space for the malloc call
 			
+			pthread_mutex_unlock(&mutex);
+			return (void*) (list_ptr + 1);
+		
+	}
+				
 			
   // Store the size in the header
   //struct ObjectHeader * o = (struct ObjectHeader *) _mem;
 
  // o->_objectSize = roundedSize;
 
-  pthread_mutex_unlock(&mutex);
+  //pthread_mutex_unlock(&mutex);
 
   // Return a pointer to usable memory
-  if(flag == 1 || flag == 2) return (void *) (temp + 1);
+ //return (void *) (temp + 1);
 
 }
 
