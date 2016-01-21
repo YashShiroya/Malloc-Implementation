@@ -203,7 +203,7 @@ void * allocateObject( size_t size )
 	if(flag == 1) {
 	
 		//Place new footer
-		char * new_footer_position = (char*)list_ptr + sizeof(struct ObjectHeader) + raw_size;
+		char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
 		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
 		
 		//Place new header
