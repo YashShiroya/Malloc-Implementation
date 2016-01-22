@@ -323,7 +323,7 @@ void freeObject( void * ptr )
 	else if(coal_both == 2) {
 	}*/
 	
-	/*struct ObjectHeader * p = _freeList->_next;
+	struct ObjectHeader * p = _freeList->_next;
 	struct ObjectHeader * pointer = current_header;
 	while(p != _freeList) {
 		if(pointer < p) {
@@ -335,7 +335,7 @@ void freeObject( void * ptr )
 			break;
 		}
 		p = p->_next;
-	}*/
+	}
 
   //Case1: Coalese left block only 
 	
