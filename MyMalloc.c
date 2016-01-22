@@ -280,6 +280,7 @@ void * allocateObject( size_t size )
 		  //_memStart = (char*) currentHeader;		  
 		  list_ptr->_prev->_next = currentHeader;
 		  list_ptr->_prev = currentHeader;
+		  list_ptr = list_ptr->_prev;
 		  //Split
 		  		/*list_ptr = currentHeader;
 		  
