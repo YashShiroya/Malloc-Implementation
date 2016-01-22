@@ -342,11 +342,11 @@ void freeObject( void * ptr )
 			
 		}
 		else if(coal_left == 1) {
-			left_header->_allocated = 0;
+			/*left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
 			current_footer->_objectSize = left_header->_objectSize;
-			pointer = left_header;		
+			pointer = left_header;*/		
 		} 
 	}
 	else if(coal_both == 2) {
