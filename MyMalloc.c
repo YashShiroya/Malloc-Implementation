@@ -295,36 +295,50 @@ void freeObject( void * ptr )
 {
   // Add your code here
   //Set ptr to head of memory block
-  char * mover_head = (char*) ptr - sizeof(struct ObjectHeader);
-  struct ObjectHeader * current_header = (struct ObjectHeader*) mover_head;
-  char * mover_left = (char*) ptr - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
-  struct ObjectFooter * left_footer = (struct ObjectFooter*) mover_left;
-  char * mover_right = (char*) ptr - sizeof(struct ObjectHeader) + current_header->_objectSize;
-  struct ObjectHeader * right_header = (struct ObjectHeader*) mover_right;
+  char * mover_head_current = (char*) ptr - sizeof(struct ObjectHeader);
+  struct ObjectHeader * current_header = (struct ObjectHeader*) mover_head_current;
+  
+  char * mover_left_foot = (char*) ptr - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
+  struct ObjectFooter * left_footer = (struct ObjectFooter*) mover_left_foot;
+  
+  char * mover_left_head = mover_left_foot + sizeof(struct ObjectFooter) - left_footer->_objectSize;
+  struct ObjectHeader * left_header = (struct ObjectHeader*) mover_left_head;
+  
+  char * mover_right_head = (char*) ptr - sizeof(struct ObjectHeader) + current_header->_objectSize;
+  struct ObjectHeader * right_header = (struct ObjectHeader*) mover_right_head;
+  
+  char * mover_right_foot = mover_right_head + right_header->_objectSize - sizeof(struct ObjectFooter);
+  struct ObjectFooter * right_footer = (struct ObjectFooter*) mover_right_head;
   
   int coal_left = 0, coal_right = 0, coal_both = -1;
+
 
 	if(left_footer->_allocated == 0) coal_left = 1;
 	if(right_header->_allocated == 0) coal_right = 1;
 	
 	coal_both = coal_left + coal_right;
 	
-	/*if(coal_both == 0) {
-		
-	}
-	else if(coal_both == 1) {
+    if(coal_both == 1) {
 		if(coal_right == 1) {
-		
+			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+			current_header->_allocated = 0;
+			
+			current_header->_next = right_header->_next;
+			current_header->_prev = right_header->_prev;
+			
+			right_header->_prev->_next = current_header;
+			
 		}
 		else if(coal_left == 1) {
-		
+			
 		} 
 	}
 	else if(coal_both == 2) {
-	}*/
+	}
 	
 	struct ObjectHeader * p = _freeList->_next;
 	struct ObjectHeader * pointer = current_header;
+	
 	while(p != _freeList) {
 		if(pointer < p) {
 			pointer->_allocated = 0;
