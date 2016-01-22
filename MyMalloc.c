@@ -174,7 +174,7 @@ void * allocateObject( size_t size )
 	struct ObjectHeader * temp = list_ptr;
 	int flag = -1;
 	
-	while(list_ptr->_next->_allocated != 2) {
+	while(list_ptr != _freeList ) {
 		
 		if(list_ptr->_objectSize >= roundedSize) {
 			size_t remainder = list_ptr->_objectSize - roundedSize; 
