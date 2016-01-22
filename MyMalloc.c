@@ -209,7 +209,7 @@ void * allocateObject( size_t size )
 	
 	while(list_ptr != _freeList) {
 		//Check if block is large enough for malloc call
-		if(list_ptr->_objectSize >= roundedSize) {
+		if(list_ptr->_objectSize > roundedSize) {
 			flag = 0;
 			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);  
 			//Case 1: Split results in second block reuseable
