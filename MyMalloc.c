@@ -174,7 +174,7 @@ void * allocateObject( size_t size )
 	struct ObjectHeader * temp = list_ptr;
 	int flag = -1;
 	
-	while(list_ptr != _freeList ) {
+	while(list_ptr->_allocated != 2) {
 		
 		if(list_ptr->_objectSize >= roundedSize) {
 			size_t remainder = list_ptr->_objectSize - roundedSize; 
@@ -217,10 +217,9 @@ void * allocateObject( size_t size )
 				list_ptr->_allocated = 1;
 				list_ptr->_objectSize = roundedSize;
 				
-				//pthread_mutex_unlock(&mutex);
-				//return (void*) (list_ptr + 1);
-				
-				break;
+				pthread_mutex_unlock(&mutex);
+				return (void*) (list_ptr + 1);
+
 			}
 			//Case 2: Split results in second block unuseable, so return entire block
 			if(remainder <= t) {
@@ -233,15 +232,15 @@ void * allocateObject( size_t size )
 				list_ptr->_allocated = 1;
 				list_ptr->_prev->_next = list_ptr->_next;
 				list_ptr->_next->_prev = list_ptr->_prev;
-							
-				break;
-				//pthread_mutex_unlock(&mutex);
-				//return (void*) (list_ptr + 1);
+
+				pthread_mutex_unlock(&mutex);
+				return (void*) (list_ptr + 1);
 			}
 			
 			//break;
 		}
 		list_ptr = list_ptr->_next;
+		//if(list_ptr->_allocated != 2) printf("yolo\n");
 	}
 			
 			
