@@ -323,6 +323,10 @@ void freeObject( void * ptr )
 	
 	coal_both = coal_left + coal_right;
 	
+    /*if(coal_both == 0) {
+    	current_header->_allocated = 0;
+    	current_footer->_allocated = 0;
+    }*/
     if(coal_both == 1) {
 		if(coal_right == 1) {
 			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
