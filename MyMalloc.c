@@ -298,6 +298,9 @@ void freeObject( void * ptr )
   char * mover_head_current = (char*) ptr - sizeof(struct ObjectHeader);
   struct ObjectHeader * current_header = (struct ObjectHeader*) mover_head_current;
   
+  char * mover_foot_current = mover_head_current + current_header->_objectSize - sizeof(struct ObjectFooter);
+  struct ObjectFooter * current_footer = (struct ObjectFooter*) mover_foot_current;
+  
   char * mover_left_foot = (char*) ptr - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
   struct ObjectFooter * left_footer = (struct ObjectFooter*) mover_left_foot;
   
@@ -316,6 +319,8 @@ void freeObject( void * ptr )
 	if(left_footer->_allocated == 0) coal_left = 1;
 	if(right_header->_allocated == 0) coal_right = 1;
 	
+	struct ObjectHeader * pointer = current_header;
+	
 	coal_both = coal_left + coal_right;
 	
     if(coal_both == 1) {
@@ -327,17 +332,23 @@ void freeObject( void * ptr )
 			current_header->_prev = right_header->_prev;
 			
 			right_header->_prev->_next = current_header;
+			right_footer->_allocated = 0;
+			right_footer->_objectSize = current_header->_objectSize;
+			pointer = current_header;
 			
 		}
 		else if(coal_left == 1) {
-			
+			left_header->_allocated = 0;
+			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
+			current_footer->_allocated = 0;
+			current_footer->_objectSize = left_header->_objectSize;			
 		} 
 	}
 	else if(coal_both == 2) {
 	}
 	
 	struct ObjectHeader * p = _freeList->_next;
-	struct ObjectHeader * pointer = current_header;
+	
 	
 	while(p != _freeList) {
 		if(pointer < p) {
