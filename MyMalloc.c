@@ -167,8 +167,7 @@ void * allocateObject( size_t size )
   // 8 bytes for alignment.
   size_t roundedSize = (size + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter) + 7) & ~7;
   
-  // Naively get memory from the OS every time
-  //void * _mem = getMemoryFromOS( roundedSize );		//rem
+ 
 
 	struct ObjectHeader * list_ptr = _freeList->_next;
 	struct ObjectHeader * temp = list_ptr;
@@ -217,8 +216,8 @@ void * allocateObject( size_t size )
 				list_ptr->_allocated = 1;
 				list_ptr->_objectSize = roundedSize;
 				
-				pthread_mutex_unlock(&mutex);
-				return (void*) (list_ptr + 1);
+				//pthread_mutex_unlock(&mutex);
+				//return (void*) (list_ptr + 1);
 
 			}
 			//Case 2: Split results in second block unuseable, so return entire block
@@ -233,21 +232,23 @@ void * allocateObject( size_t size )
 				list_ptr->_prev->_next = list_ptr->_next;
 				list_ptr->_next->_prev = list_ptr->_prev;
 
-				pthread_mutex_unlock(&mutex);
-				return (void*) (list_ptr + 1);
+				//pthread_mutex_unlock(&mutex);
+				//return (void*) (list_ptr + 1);
 			}
 			
-			//break;
+			break;
 		}
 		list_ptr = list_ptr->_next;
 		//if(list_ptr->_allocated != 2) printf("yolo\n");
 	}
 			
-			
+	
+	 // Naively get memory from the OS every time
+  //void * _mem = getMemoryFromOS( roundedSize );		//rem
   // Store the size in the header
   //struct ObjectHeader * o = (struct ObjectHeader *) _mem;
 
- // o->_objectSize = roundedSize;
+  //o->_objectSize = roundedSize;
 
   //pthread_mutex_unlock(&mutex);
 
