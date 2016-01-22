@@ -233,7 +233,7 @@ void * allocateObject( size_t size )
 	//Case 2: Split results in second block unuseable, so return entire block
 	else if(flag == 2) {
 						
-		/*char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
+		char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
 		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
 		new_footer->_allocated = 1;
 		new_footer->_objectSize = list_ptr->_objectSize;
@@ -241,7 +241,7 @@ void * allocateObject( size_t size )
 		list_ptr->_prev->_next = list_ptr->_next;
 		list_ptr->_next->_prev = list_ptr->_prev;
 		pthread_mutex_unlock(&mutex);
-		return (void*) (list_ptr + 1);*/
+		return (void*) (list_ptr + 1);
 		
 	}
 	//Case 3: Request 2MB chunk
