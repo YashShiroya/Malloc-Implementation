@@ -157,8 +157,10 @@ void initialize()
 
 void split(struct ObjectHeader * list_ptr, size_t roundedSize) {
 		
+		//Search for old footer position
 		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
-	
+		
+		//Overwrite old footer	
 		struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
 	
 		old_footer->_allocated = 0;
@@ -168,7 +170,7 @@ void split(struct ObjectHeader * list_ptr, size_t roundedSize) {
 		char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
 		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
 				
-		//Set header/footer fields
+		//Set new footer fields
 		new_footer->_allocated = 1;
 		new_footer->_objectSize = roundedSize;
 		
@@ -176,6 +178,7 @@ void split(struct ObjectHeader * list_ptr, size_t roundedSize) {
 		char * new_header_position = (char*)list_ptr + roundedSize;
 		struct ObjectHeader * new_header = (struct ObjectHeader*) new_header_position;
 		
+		//Set new header fields
 		new_header->_next = list_ptr->_next;
 		new_header->_prev = list_ptr->_prev; 
 		new_header->_allocated = 0;
@@ -183,13 +186,9 @@ void split(struct ObjectHeader * list_ptr, size_t roundedSize) {
 		
 		//List changes
 		list_ptr->_prev->_next = new_header;
-		list_ptr->_next->_prev = new_header;
-				
-		
+		list_ptr->_next->_prev = new_header;		
 		list_ptr->_allocated = 1;
 		list_ptr->_objectSize = roundedSize;
-		
-		
 }
 
 void * allocateObject( size_t size )
@@ -212,11 +211,10 @@ void * allocateObject( size_t size )
 		//Check if block is large enough for malloc call
 		if(list_ptr->_objectSize >= roundedSize) {
 			flag = 0;
-			size_t remainder = list_ptr->_objectSize - roundedSize; 
-			size_t t = 8 + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter);
-			
+			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);;  
+
 			//Case 1: Split results in second block reuseable
-			if(remainder > t) {
+			if(remainder > 8) {
 				flag = 1; break;		
 			}
 			//Case 2: Split results in second block unuseable, so return entire block
@@ -293,20 +291,6 @@ void * allocateObject( size_t size )
 				  
 	}
 	
-	 // Naively get memory from the OS every time
-  //void * _mem = getMemoryFromOS( roundedSize );		//rem
-  // Store the size in the header
-  //struct ObjectHeader * o = (struct ObjectHeader *) _mem;
-
-  //o->_objectSize = roundedSize;
-
-  //pthread_mutex_unlock(&mutex);
-
-  // Return a pointer to usable memory
- //return (void *) (temp + 1);
- 		//pthread_mutex_unlock(&mutex);
-		//return (void*) (list_ptr + 1);
-
 }
 
 
@@ -314,6 +298,7 @@ void * allocateObject( size_t size )
 void freeObject( void * ptr )
 {
   // Add your code here
+  
 	
   return;
 
