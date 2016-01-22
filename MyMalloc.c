@@ -329,24 +329,25 @@ void freeObject( void * ptr )
     }*/
     if(coal_both == 1) {
 		if(coal_right == 1) {
-			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
 			current_header->_allocated = 0;
 			
 			current_header->_next = right_header->_next;
 			current_header->_prev = right_header->_prev;
 			
 			right_header->_prev->_next = current_header;
+			//right_header->_next->_prev = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
-			pointer = current_header;*/
+			pointer = current_header;
 			
 		}
 		else if(coal_left == 1) {
-			/*left_header->_allocated = 0;
+			left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
 			current_footer->_objectSize = left_header->_objectSize;
-			pointer = left_header;*/		
+			pointer = left_header;
 		} 
 	}
 	else if(coal_both == 2) {
@@ -359,6 +360,16 @@ void freeObject( void * ptr )
 		left_header->_next = left_header->_next->_next;
 		right_header->_next->_prev = left_header;
 		pointer = left_header;*/
+			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+			current_header->_allocated = 0;
+			
+			current_header->_next = right_header->_next;
+			current_header->_prev = right_header->_prev;
+			
+			right_header->_prev->_next = current_header;
+			right_footer->_allocated = 0;
+			right_footer->_objectSize = current_header->_objectSize;
+			pointer = current_header;*/
 	}
 	
 	struct ObjectHeader * p = _freeList->_next;
