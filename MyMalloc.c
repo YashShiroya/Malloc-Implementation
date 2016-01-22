@@ -209,24 +209,35 @@ void * allocateObject( size_t size )
 	int flag = -1;
 	
 	while(list_ptr->_allocated != 2) {
-		
+		//Check if block is large enough for malloc call
 		if(list_ptr->_objectSize >= roundedSize) {
 			flag = 0;
 			size_t remainder = list_ptr->_objectSize - roundedSize; 
 			size_t t = 8 + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter);
-			//Case 2: Split results in second block unuseable, so return entire block
-			if(remainder <= t) {
-				flag = 1; break;	
-			}
+			
 			//Case 1: Split results in second block reuseable
 			if(remainder > t) {
-				flag = 2; break;		
+				flag = 1; break;		
 			}
+			//Case 2: Split results in second block unuseable, so return entire block
+			else {
+				flag = 2; break;	
+			}
+			
 		}
 		list_ptr = list_ptr->_next;
 	}
 	
+	//Case 1: Split results in second block reuseable	 
 	if(flag == 1) {
+	
+		split(list_ptr, roundedSize);
+		pthread_mutex_unlock(&mutex);
+		return (void*) (list_ptr + 1);
+		
+	}
+	//Case 2: Split results in second block unuseable, so return entire block
+	else if(flag == 2) {
 						
 		char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
 		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
@@ -237,11 +248,7 @@ void * allocateObject( size_t size )
 		list_ptr->_next->_prev = list_ptr->_prev;
 		pthread_mutex_unlock(&mutex);
 		return (void*) (temp + 1);
-	}
-	else if(flag == 2) {
-		split(list_ptr, roundedSize);
-		pthread_mutex_unlock(&mutex);
-		return (void*) (list_ptr + 1);
+		
 	}
 	//Case 3
 	else if(flag == -1) {
@@ -280,11 +287,11 @@ void * allocateObject( size_t size )
 		  list_ptr = list_ptr->_prev;
 		  
 		  //Split
-			split(list_ptr, roundedSize);
-			pthread_mutex_unlock(&mutex);
-			return (void*) (list_ptr + 1);
+		  split(list_ptr, roundedSize);
+		  pthread_mutex_unlock(&mutex);
+		  return (void*) (list_ptr + 1);
 				  
-		}
+	}
 	
 	 // Naively get memory from the OS every time
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
