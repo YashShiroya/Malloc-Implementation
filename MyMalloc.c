@@ -207,12 +207,11 @@ void * allocateObject( size_t size )
 	struct ObjectHeader * temp = list_ptr;
 	int flag = -1;
 	
-	while(list_ptr->_allocated != 2) {
+	while(list_ptr != _freeList) {
 		//Check if block is large enough for malloc call
 		if(list_ptr->_objectSize >= roundedSize) {
 			flag = 0;
-			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);;  
-
+			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);  
 			//Case 1: Split results in second block reuseable
 			if(remainder > 8) {
 				flag = 1; break;		
@@ -221,7 +220,6 @@ void * allocateObject( size_t size )
 			else {
 				flag = 2; break;	
 			}
-			
 		}
 		list_ptr = list_ptr->_next;
 	}
@@ -248,10 +246,10 @@ void * allocateObject( size_t size )
 		return (void*) (temp + 1);
 		
 	}
-	//Case 3
+	//Case 3: Request 2MB chunk
 	else if(flag == -1) {
 			
-		  void * _mem = getMemoryFromOS( ArenaSize + (2*sizeof(struct ObjectHeader)) + (2*sizeof(struct ObjectFooter)) );
+		  void * _mem = getMemoryFromOS( ArenaSize + (2*sizeof(struct ObjectHeader)) + (2*sizeof(struct ObjectFooter)));
 
 		  //establish fence posts
 		  struct ObjectFooter * fencepost1 = (struct ObjectFooter *)_mem;							//Dummy Footer
