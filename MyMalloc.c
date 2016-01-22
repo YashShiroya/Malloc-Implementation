@@ -209,7 +209,7 @@ void * allocateObject( size_t size )
 	
 	while(list_ptr != _freeList) {
 		//Check if block is large enough for malloc call
-		if(list_ptr->_objectSize > roundedSize) {
+		if(list_ptr->_objectSize >= roundedSize) {
 			flag = 0;
 			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);  
 			//Case 1: Split results in second block reuseable
@@ -241,11 +241,11 @@ void * allocateObject( size_t size )
 		list_ptr->_prev->_next = list_ptr->_next;
 		list_ptr->_next->_prev = list_ptr->_prev;
 		pthread_mutex_unlock(&mutex);
-		return (void*) (temp + 1);
+		return (void*) (list_ptr + 1);
 		
 	}
 	//Case 3: Request 2MB chunk
-	else if(flag == -1) {
+	else {
 			
 		  void * _mem = getMemoryFromOS( ArenaSize + (2*sizeof(struct ObjectHeader)) + (2*sizeof(struct ObjectFooter)));
 
@@ -336,7 +336,7 @@ void freeObject( void * ptr )
 			current_header->_prev = right_header->_prev;
 			
 			right_header->_prev->_next = current_header;
-			//right_header->_next->_prev = current_header;
+			//current_header->_next->_prev = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
 			pointer = current_header;
@@ -352,7 +352,7 @@ void freeObject( void * ptr )
 		} 
 	}
 	else if(coal_both == 2) {
-		left_header->_allocated = 0;
+		/*left_header->_allocated = 0;
 		left_header->_objectSize = left_header->_objectSize + current_header->_objectSize + right_header->_objectSize;
 		
 		right_footer->_allocated = 0;
@@ -360,17 +360,27 @@ void freeObject( void * ptr )
 		
 		left_header->_next = left_header->_next->_next;
 		right_header->_next->_prev = left_header;
-		pointer = left_header;
-			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+		pointer = left_header;*/
+		
+			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
 			current_header->_allocated = 0;
 			
 			current_header->_next = right_header->_next;
 			current_header->_prev = right_header->_prev;
-			
+	
 			right_header->_prev->_next = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
-			pointer = current_header;*/
+			//pointer = current_header;
+			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
+			right_footer->_objectSize = right_footer->_objectSize + left_footer->_objectSize;
+			
+			left_header->_allocated = 0;
+			right_footer->_allocated = 0;
+			left_header->_next = right_header->_next;
+			right_header->_next->_prev = left_header;
+			pointer = left_header;
+			
 	}
 	
 	
@@ -383,18 +393,11 @@ void freeObject( void * ptr )
 			pointer->_prev = p->_prev;
 			p->_prev->_next = pointer;
 			p->_prev = pointer;
-			return;
+			break;
 		}
 		p = p->_next;
 	}
-	
-			pointer->_allocated = 0;
-			pointer->_next = p;
-			pointer->_prev = p->_prev;
-			p->_prev->_next = pointer;
-			p->_prev = pointer;	
-
-	
+		
   return;
 
 }
