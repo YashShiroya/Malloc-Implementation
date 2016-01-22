@@ -294,7 +294,17 @@ void * allocateObject( size_t size )
 void freeObject( void * ptr )
 {
   // Add your code here
+  //Set ptr to head of memory block
+  char * mover_head = (char*) ptr - sizeof(struct ObjectHeader);
+  struct ObjectHeader * current_header = (struct ObjectHeader*) mover_head;
+  char * mover_left = (char*) ptr - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
+  struct ObjectFooter * left_footer = (struct ObjectFooter*) mover_left;
+  char * mover_right = (char*) ptr - sizeof(struct ObjectHeader) + current_header->_objectSize;
+  struct ObjectHeader * right_header = (struct ObjectHeader*) mover_right;
   
+  int coal = -1;
+
+  //Case1: Coales left block only 
 	
   return;
 
@@ -306,7 +316,7 @@ size_t objectSize( void * ptr )
   struct ObjectHeader * o =
     (struct ObjectHeader *) ( (char *) ptr - sizeof(struct ObjectHeader) );
 
-  // Substract the size of the header
+  // Subtract the size of the header
   return o->_objectSize;
 }
 
