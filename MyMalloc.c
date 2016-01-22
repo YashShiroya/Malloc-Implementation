@@ -185,6 +185,43 @@ void * allocateObject( size_t size )
 			//Case 1: Split results in second block reuseable
 			if(remainder > 8) {
 				flag = 1;
+				
+					//Overwriting old footer
+				char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
+		
+				struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
+		
+				old_footer->_allocated = 0;
+				old_footer->_objectSize = list_ptr->_objectSize - roundedSize;
+	
+				//Place new footer
+				char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
+				struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
+		
+				//Place new header
+				char * new_header_position = (char*)list_ptr + roundedSize;
+				struct ObjectHeader * new_header = (struct ObjectHeader*) new_header_position;
+		
+		
+				//Set header/footer fields
+				new_footer->_allocated = 1;
+				new_footer->_objectSize = roundedSize;
+		
+				new_header->_allocated = 0;
+				new_header->_objectSize = list_ptr->_objectSize - roundedSize;
+				new_header->_next = list_ptr->_next;
+				new_header->_prev = list_ptr->_prev; 
+		
+				//List changes
+				list_ptr->_prev->_next = new_header;
+				list_ptr->_next->_prev = new_header;
+		
+				list_ptr->_allocated = 1;
+				list_ptr->_objectSize = roundedSize;
+				
+				pthread_mutex_unlock(&mutex);
+				return (void*) (list_ptr + 1);
+				
 				//break;
 			}
 			
@@ -198,49 +235,7 @@ void * allocateObject( size_t size )
 		list_ptr = list_ptr->_next;
 	}
 	
-	//flag = 1, hence split and reuse remainder
-	if(flag == 1) {
-	
-		//Overwriting old footer
-		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
-		
-		struct ObjectFooter * old_footer = (struct ObjectFooter*) old_footer_position;
-		
-		old_footer->_allocated = 0;
-		old_footer->_objectSize = list_ptr->_objectSize - roundedSize;
-	
-		//Place new footer
-		char * new_footer_position = (char*)list_ptr + roundedSize - sizeof(struct ObjectFooter);//sizeof(struct ObjectHeader) + raw_size;
-		struct ObjectFooter * new_footer = (struct ObjectFooter*) new_footer_position;
-		
-		//Place new header
-		char * new_header_position = (char*)list_ptr + roundedSize;
-		struct ObjectHeader * new_header = (struct ObjectHeader*) new_header_position;
-		
-		
-		//Set header/footer fields
-		new_footer->_allocated = 1;
-		new_footer->_objectSize = roundedSize;
-		
-		new_header->_allocated = 0;
-		new_header->_objectSize = list_ptr->_objectSize - roundedSize;
-		new_header->_next = list_ptr->_next;
-		new_header->_prev = list_ptr->_prev; 
-		
-		//List changes
-		list_ptr->_prev->_next = new_header;
-		list_ptr->_next->_prev = new_header;
-		
-		list_ptr->_allocated = 1;
-		list_ptr->_objectSize = roundedSize;
-		
-		//pthread_mutex_unlock(&mutex);		
-		//return (void *) (list_ptr + 1);
-		
-		//next/prev of list_ptr____________________________________________________________________
-		
-	}
-	if(flag == 2) {
+	/*if(flag == 2) {
 
 			list_ptr->_prev->_next = list_ptr->_next;
 			list_ptr->_next->_prev = list_ptr->_prev;
@@ -249,7 +244,7 @@ void * allocateObject( size_t size )
 			//pthread_mutex_unlock(&mutex);
 			//return (void*) (list_ptr + 1);
 		
-	}
+	}*/
 				
 			
   // Store the size in the header
@@ -261,8 +256,8 @@ void * allocateObject( size_t size )
 
   // Return a pointer to usable memory
  //return (void *) (temp + 1);
- 		pthread_mutex_unlock(&mutex);
-		return (void*) (list_ptr + 1);
+ 		//pthread_mutex_unlock(&mutex);
+		//return (void*) (list_ptr + 1);
 
 }
 
