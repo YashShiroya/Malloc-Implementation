@@ -245,7 +245,7 @@ void * allocateObject( size_t size )
 		
 	}
 	//Case 3: Request 2MB chunk
-	if(list_ptr) {
+	if(flag == 12) {
 			
 		  void * _mem = getMemoryFromOS( ArenaSize + (2*sizeof(struct ObjectHeader)) + (2*sizeof(struct ObjectFooter)));
 
