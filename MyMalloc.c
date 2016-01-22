@@ -213,13 +213,11 @@ void * allocateObject( size_t size )
 			flag = 0;
 			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);  
 			//Case 1: Split results in second block reuseable
-			if(remainder > 8) {
-				flag = 1; break;		
-			}
+			if(remainder > 8) flag = 1;	
 			//Case 2: Split results in second block unuseable, so return entire block
-			else {
-				flag = 2; break;	
-			}
+			else flag = 2;
+
+			break;	
 		}
 		list_ptr = list_ptr->_next;
 	}
