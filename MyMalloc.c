@@ -342,8 +342,8 @@ void freeObject( void * ptr )
 			pointer = current_header;
 			
 		}
-	}
-		/*else if(coal_left == 1) {
+	
+		else if(coal_left == 1) {
 			left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
@@ -370,12 +370,12 @@ void freeObject( void * ptr )
 			right_header->_prev->_next = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
-			pointer = current_header;
-	}*/
+			pointer = current_header;*/
+	}
+	
 	
 	struct ObjectHeader * p = _freeList->_next;
-	
-	
+		
 	while(p != _freeList) {
 		if(pointer < p) {
 			pointer->_allocated = 0;
@@ -383,10 +383,16 @@ void freeObject( void * ptr )
 			pointer->_prev = p->_prev;
 			p->_prev->_next = pointer;
 			p->_prev = pointer;
-			break;
+			return;
 		}
 		p = p->_next;
 	}
+	
+			pointer->_allocated = 0;
+			pointer->_next = p;
+			pointer->_prev = p->_prev;
+			p->_prev->_next = pointer;
+			p->_prev = pointer;	
 
 	
   return;
