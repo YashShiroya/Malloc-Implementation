@@ -167,8 +167,6 @@ void * allocateObject( size_t size )
   // 8 bytes for alignment.
   size_t roundedSize = (size + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter) + 7) & ~7;
   
-  //size_t raw_size = roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
-
   // Naively get memory from the OS every time
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
 
@@ -177,9 +175,7 @@ void * allocateObject( size_t size )
 	int flag = -1;
 	
 	while(list_ptr->_allocated != 2) {
-	
-		size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);	//Check if correct_______________________________________________________________________________
-				
+		size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
 		if(list_ptr->_objectSize >= roundedSize) {
 		
 			//Case 1: Split results in second block reuseable
@@ -228,6 +224,8 @@ void * allocateObject( size_t size )
 			//Case 2: Split results in second block unuseable, so return entire block
 			else {
 				flag = 2;
+				
+				
 			}
 			
 			break;
@@ -258,6 +256,8 @@ void * allocateObject( size_t size )
  //return (void *) (temp + 1);
  		//pthread_mutex_unlock(&mutex);
 		//return (void*) (list_ptr + 1);
+		pthread_mutex_unlock(&mutex);
+		return (void*) (list_ptr + 1);
 
 }
 
