@@ -325,7 +325,7 @@ void freeObject( void * ptr )
 	
     if(coal_both == 1) {
 		if(coal_right == 1) {
-			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+		/*	current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
 			current_header->_allocated = 0;
 			
 			current_header->_next = right_header->_next;
@@ -334,7 +334,7 @@ void freeObject( void * ptr )
 			right_header->_prev->_next = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
-			pointer = current_header;
+			pointer = current_header;*/
 			
 		}
 		else if(coal_left == 1) {
