@@ -245,7 +245,7 @@ void * allocateObject( size_t size )
 		
 	}
 	//Case 3: Request 2MB chunk
-	else {
+	if(list_ptr == _freeList) {
 			
 		  void * _mem = getMemoryFromOS( ArenaSize + (2*sizeof(struct ObjectHeader)) + (2*sizeof(struct ObjectFooter)));
 
@@ -385,7 +385,7 @@ void freeObject( void * ptr )
 	
 	
 	struct ObjectHeader * p = _freeList->_next;
-		
+
 	while(p != _freeList) {
 		if(pointer < p) {
 			pointer->_allocated = 0;
@@ -393,11 +393,11 @@ void freeObject( void * ptr )
 			pointer->_prev = p->_prev;
 			p->_prev->_next = pointer;
 			p->_prev = pointer;
-			break;
+			return;
 		}
 		p = p->_next;
 	}
-		
+	
   return;
 
 }
