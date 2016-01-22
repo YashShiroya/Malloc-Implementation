@@ -175,8 +175,8 @@ void * allocateObject( size_t size )
 	int flag = -1;
 	
 	while(list_ptr->_allocated != 2) {
-		size_t remainder = list_ptr->_objectSize - roundedSize; 
-		size_t t = 8 + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter);
+		size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
+		size_t t = 8;
 		if(list_ptr->_objectSize >= roundedSize) {
 		
 			//Case 1: Split results in second block reuseable
