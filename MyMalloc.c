@@ -341,10 +341,20 @@ void freeObject( void * ptr )
 			left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
-			current_footer->_objectSize = left_header->_objectSize;			
+			current_footer->_objectSize = left_header->_objectSize;
+			pointer = left_header;		
 		} 
 	}
 	else if(coal_both == 2) {
+		left_header->_allocated = 0;
+		left_header->_objectSize = left_header->_objectSize + current_header->_objectSize + right_header->_objectSize;
+		
+		right_footer->_allocated = 0;
+		right_footer->_objectSize = left_header->_objectSize;
+		
+		left_header->_next = left_header->_next->_next;
+		right_header->_next->_prev = left_header;
+		pointer = left_header;
 	}
 	
 	struct ObjectHeader * p = _freeList->_next;
