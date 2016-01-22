@@ -302,9 +302,42 @@ void freeObject( void * ptr )
   char * mover_right = (char*) ptr - sizeof(struct ObjectHeader) + current_header->_objectSize;
   struct ObjectHeader * right_header = (struct ObjectHeader*) mover_right;
   
-  int coal = -1;
+  int coal_left = 0, coal_right = 0, coal_both = -1;
 
-  //Case1: Coales left block only 
+	if(left_footer->_allocated == 0) coal_left = 1;
+	if(right_header->_allocated == 0) coal_right = 1;
+	
+	coal_both = coal_left + coal_right;
+	
+	/*if(coal_both == 0) {
+		
+	}
+	else if(coal_both == 1) {
+		if(coal_right == 1) {
+		
+		}
+		else if(coal_left == 1) {
+		
+		} 
+	}
+	else if(coal_both == 2) {
+	}*/
+	
+	struct ObjectHeader * p = _freeList->_next;
+	struct ObjectHeader * pointer = current_header;
+	while(p != _freeList) {
+		if(pointer < p) {
+			pointer->_allocated = 0;
+			pointer->_next = p;
+			pointer->_prev = p->_prev;
+			p->_prev->_next = pointer;
+			p->_prev = pointer;
+			break;
+		}
+		p = p->_next;
+	}
+
+  //Case1: Coalese left block only 
 	
   return;
 
