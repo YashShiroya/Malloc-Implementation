@@ -167,7 +167,7 @@ void * allocateObject( size_t size )
   // 8 bytes for alignment.
   size_t roundedSize = (size + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter) + 7) & ~7;
   
-  size_t raw_size = roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
+  //size_t raw_size = roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
 
   // Naively get memory from the OS every time
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
@@ -177,10 +177,9 @@ void * allocateObject( size_t size )
 	int flag = -1;
 	
 	while(list_ptr->_allocated != 2) {
-		size_t remainder = list_ptr->_objectSize - roundedSize;	//Check if correct_______________________________________________________________________________
-		
-		remainder = remainder - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
-		
+	
+		size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);	//Check if correct_______________________________________________________________________________
+				
 		if(list_ptr->_objectSize >= roundedSize) {
 		
 			//Case 1: Split results in second block reuseable
@@ -234,8 +233,8 @@ void * allocateObject( size_t size )
 		list_ptr->_allocated = 1;
 		list_ptr->_objectSize = roundedSize;
 		
-		pthread_mutex_unlock(&mutex);		
-		return (void *) (list_ptr + 1);
+		//pthread_mutex_unlock(&mutex);		
+		//return (void *) (list_ptr + 1);
 		
 		//next/prev of list_ptr____________________________________________________________________
 		
@@ -246,8 +245,8 @@ void * allocateObject( size_t size )
 			list_ptr->_next->_prev = list_ptr->_prev;
 			list_ptr->_allocated = 1;
 			
-			pthread_mutex_unlock(&mutex);
-			return (void*) (list_ptr + 1);
+			//pthread_mutex_unlock(&mutex);
+			//return (void*) (list_ptr + 1);
 		
 	}
 				
@@ -261,6 +260,8 @@ void * allocateObject( size_t size )
 
   // Return a pointer to usable memory
  //return (void *) (temp + 1);
+ 		pthread_mutex_unlock(&mutex);
+		return (void*) (list_ptr + 1);
 
 }
 
