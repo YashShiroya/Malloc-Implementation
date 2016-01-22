@@ -266,22 +266,22 @@ void * allocateObject( size_t size )
 		  struct ObjectHeader * currentHeader = (struct ObjectHeader *) temp;
 		  temp = (char *)_mem + sizeof(struct ObjectFooter) + sizeof(struct ObjectHeader) + ArenaSize;
 		  struct ObjectFooter * currentFooter = (struct ObjectFooter *) temp;
-		  _freeList = &_freeListSentinel;
+		  //_freeList = &_freeListSentinel;
 		  currentHeader->_objectSize = ArenaSize + sizeof(struct ObjectHeader) + sizeof(struct ObjectFooter); //2MB
 		  currentHeader->_allocated = 0;
-		  currentHeader->_next = _freeList;
-		  currentHeader->_prev = _freeList;
+		  currentHeader->_next = list_ptr;
+		  currentHeader->_prev = list_ptr->_prev;
 		  currentFooter->_allocated = 0;
 		  currentFooter->_objectSize = currentHeader->_objectSize;
-		  _freeList->_prev = currentHeader;
-		  _freeList->_next = currentHeader; 
-		  _freeList->_allocated = 2; // sentinel. no coalescing.
-		  _freeList->_objectSize = 0;
-		  _memStart = (char*) currentHeader;
-		  
-		  
+		  //_freeList->_prev = currentHeader;
+		  //_freeList->_next = currentHeader; 
+		  //_freeList->_allocated = 2; // sentinel. no coalescing.
+		  //_freeList->_objectSize = 0;
+		  //_memStart = (char*) currentHeader;		  
+		  list_ptr->_prev->_next = currentHeader;
+		  list_ptr->_prev = currentHeader;
 		  //Split
-		  		list_ptr = currentHeader;
+		  		/*list_ptr = currentHeader;
 		  
 		 		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
 		
@@ -316,10 +316,10 @@ void * allocateObject( size_t size )
 				list_ptr->_objectSize = roundedSize;
 				
 				pthread_mutex_unlock(&mutex);
-				return (void*) (list_ptr + 1);
+				return (void*) (list_ptr + 1);*/
 		  	
 				  
-		}	
+		}
 	
 	 // Naively get memory from the OS every time
   //void * _mem = getMemoryFromOS( roundedSize );		//rem
