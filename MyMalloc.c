@@ -282,7 +282,7 @@ void * allocateObject( size_t size )
 		  list_ptr->_prev = currentHeader;
 		  list_ptr = list_ptr->_prev;
 		  //Split
-		  		/*list_ptr = currentHeader;
+		  		//list_ptr = currentHeader;
 		  
 		 		char * old_footer_position = (char*)list_ptr + list_ptr->_objectSize - sizeof(struct ObjectFooter);
 		
@@ -317,9 +317,10 @@ void * allocateObject( size_t size )
 				list_ptr->_objectSize = roundedSize;
 				
 				pthread_mutex_unlock(&mutex);
-				return (void*) (list_ptr + 1);*/
-				pthread_mutex_unlock(&mutex);
 				return (void*) (list_ptr + 1);
+				//pthread_mutex_unlock(&mutex);
+				//return (void*) (list_ptr + 1);
+				
 		  	
 				  
 		}
