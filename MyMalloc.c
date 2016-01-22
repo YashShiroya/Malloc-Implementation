@@ -317,6 +317,8 @@ void * allocateObject( size_t size )
 				
 				pthread_mutex_unlock(&mutex);
 				return (void*) (list_ptr + 1);*/
+				pthread_mutex_unlock(&mutex);
+				return (void*) (list_ptr + 1);
 		  	
 				  
 		}
