@@ -382,14 +382,7 @@ void freeObject( void * ptr )
 		}
 		p = p->_next;
 	}
-	
-	if(check_sentinel != 1) {
-			pointer->_allocated = 0;
-			pointer->_next = p;
-			pointer->_prev = p->_prev;
-			p->_prev->_next = pointer;
-			p->_prev = pointer;
-	}
+
   return;
 
 }
