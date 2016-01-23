@@ -329,7 +329,7 @@ void freeObject( void * ptr )
     }*/
     if(coal_both == 1) {
 		if(coal_right == 1) {
-			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
 			current_header->_allocated = 0;
 			
 			current_header->_next = right_header->_next;
@@ -339,6 +339,17 @@ void freeObject( void * ptr )
 			//current_header->_next->_prev = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
+			pointer = current_header;*/
+			
+			//Remove node from list
+			right_header->_prev->_next = right_header->_next;
+			right_header->_next->_prev = right_header->_prev;
+			
+			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
+			current_header->_allocated = 0;
+			
+			right_footer->_objectSize = current_header->_objectSize;
+			right_footer->_allocated = 0;
 			pointer = current_header;
 			
 		}
