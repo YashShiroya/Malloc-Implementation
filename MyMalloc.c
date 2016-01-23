@@ -297,41 +297,44 @@ void freeObject( void * ptr )
   //Set ptr to head of memory block
   char * mover_head_current = (char*) ptr - sizeof(struct ObjectHeader);
   struct ObjectHeader * current_header = (struct ObjectHeader*) mover_head_current;
-  
+  //Find footer of ptr
   char * mover_foot_current = mover_head_current + current_header->_objectSize - sizeof(struct ObjectFooter);
   struct ObjectFooter * current_footer = (struct ObjectFooter*) mover_foot_current;
-  
+  //Find footer of nearest block to the left
   char * mover_left_foot = (char*) ptr - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);
   struct ObjectFooter * left_footer = (struct ObjectFooter*) mover_left_foot;
-  
+  //Find header of nearest block to the left
   char * mover_left_head = mover_left_foot + sizeof(struct ObjectFooter) - left_footer->_objectSize;
   struct ObjectHeader * left_header = (struct ObjectHeader*) mover_left_head;
-  
+  //Find header of nearest block to the right
   char * mover_right_head = (char*) ptr - sizeof(struct ObjectHeader) + current_header->_objectSize;
   struct ObjectHeader * right_header = (struct ObjectHeader*) mover_right_head;
-  
+  //Find footer of nearest block to the right
   char * mover_right_foot = mover_right_head + right_header->_objectSize - sizeof(struct ObjectFooter);
   struct ObjectFooter * right_footer = (struct ObjectFooter*) mover_right_foot;
   
+  //Set flags to identify coalescing case
   int coal_left = 0, coal_right = 0, coal_both = -1;
 
 
 	if(left_footer->_allocated == 0) coal_left = 1;
 	if(right_header->_allocated == 0) coal_right = 1;
 	
+	//Sets pointer for while loop the end of free for sorting purposes
 	struct ObjectHeader * pointer = current_header;
 	
 	coal_both = coal_left + coal_right;
 	
     if(coal_both == 0) {
-    	current_header->_allocated = 0;
-    	current_footer->_allocated = 0;
+    	/*current_header->_allocated = 0;
+    	current_footer->_allocated = 0;*/
     }
     if(coal_both == 1) {
+    	//Coalesce only right block
 		if(coal_right == 1) {
 		
 			//Remove node from list
-			right_header->_prev->_next = right_header->_next;
+			/*right_header->_prev->_next = right_header->_next;
 			right_header->_next->_prev = right_header->_prev;
 			
 			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
@@ -339,22 +342,23 @@ void freeObject( void * ptr )
 			
 			right_footer->_objectSize = current_header->_objectSize;
 			right_footer->_allocated = 0;
-			pointer = current_header;
+			pointer = current_header;*/
 			
 		}
-	
+		//Coalesce only left block
 		else if(coal_left == 1) {
-			left_header->_allocated = 0;
+			/*left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
 			current_footer->_objectSize = left_header->_objectSize;
-			return;
+			return;*/
 			//pointer = left_header;
 		} 
 	}
+	//Coalesce block on both sides
 	else if(coal_both == 2) {
 	
-			left_header->_allocated = 0;
+			/*left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize + right_header->_objectSize;
 		
 			right_footer->_allocated = 0;
@@ -362,14 +366,16 @@ void freeObject( void * ptr )
 			
 			right_header->_prev->_next = right_header->_next;
 			right_header->_next->_prev = right_header->_prev;
-			return;							
+			return;*/							
 			//pointer = left_header;
 				
 	}
 	
+	//flag to check case if p is sentinel, test5
 	int check_sentinel = -1;
 	struct ObjectHeader * p = _freeList->_next;
 
+	//Loop to place freed pointer
 	while(p != _freeList) {
 		if(pointer < p) {
 			check_sentinel = 1;
@@ -383,6 +389,7 @@ void freeObject( void * ptr )
 		p = p->_next;
 	}
 	
+	//Sentinel check, test5
 	if(check_sentinel != 1) {
 			pointer->_allocated = 0;
 			pointer->_next = p;
