@@ -311,7 +311,7 @@ void freeObject( void * ptr )
   struct ObjectHeader * right_header = (struct ObjectHeader*) mover_right_head;
   
   char * mover_right_foot = mover_right_head + right_header->_objectSize - sizeof(struct ObjectFooter);
-  struct ObjectFooter * right_footer = (struct ObjectFooter*) mover_right_head;
+  struct ObjectFooter * right_footer = (struct ObjectFooter*) mover_right_foot;
   
   int coal_left = 0, coal_right = 0, coal_both = -1;
 
