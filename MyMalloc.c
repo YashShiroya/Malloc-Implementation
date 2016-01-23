@@ -342,7 +342,7 @@ void freeObject( void * ptr )
 			pointer = current_header;*/
 			
 			//Remove node from list
-			right_header->_prev->_next = right_header->_next;
+			/*right_header->_prev->_next = right_header->_next;
 			right_header->_next->_prev = right_header->_prev;
 			
 			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
@@ -350,7 +350,7 @@ void freeObject( void * ptr )
 			
 			right_footer->_objectSize = current_header->_objectSize;
 			right_footer->_allocated = 0;
-			pointer = current_header;
+			pointer = current_header;*/
 			
 		}
 	
@@ -359,7 +359,8 @@ void freeObject( void * ptr )
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
 			current_footer->_objectSize = left_header->_objectSize;
-			pointer = left_header;
+			return;
+			//pointer = left_header;
 		} 
 	}
 	else if(coal_both == 2) {
