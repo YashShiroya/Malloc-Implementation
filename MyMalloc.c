@@ -323,25 +323,13 @@ void freeObject( void * ptr )
 	
 	coal_both = coal_left + coal_right;
 	
-    /*if(coal_both == 0) {
+    if(coal_both == 0) {
     	current_header->_allocated = 0;
     	current_footer->_allocated = 0;
-    }*/
+    }
     if(coal_both == 1) {
 		if(coal_right == 1) {
 		
-			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
-			current_header->_allocated = 0;
-			
-			current_header->_next = right_header->_next;
-			current_header->_prev = right_header->_prev;
-			
-			right_header->_prev->_next = current_header;
-			//current_header->_next->_prev = current_header;
-			right_footer->_allocated = 0;
-			right_footer->_objectSize = current_header->_objectSize;
-			pointer = current_header;*/
-			
 			//Remove node from list
 			right_header->_prev->_next = right_header->_next;
 			right_header->_next->_prev = right_header->_prev;
@@ -366,38 +354,6 @@ void freeObject( void * ptr )
 	}
 	else if(coal_both == 2) {
 	
-		//Code a1:
-		/*left_header->_allocated = 0;
-		left_header->_objectSize = left_header->_objectSize + current_header->_objectSize + right_header->_objectSize;
-		
-		right_footer->_allocated = 0;
-		right_footer->_objectSize = left_header->_objectSize;
-		
-		left_header->_next = left_header->_next->_next;
-		right_header->_next->_prev = left_header;
-		pointer = left_header;*///++++++++
-		
-		//Code a2:
-			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
-			current_header->_allocated = 0;
-			
-			current_header->_next = right_header->_next;
-			current_header->_prev = right_header->_prev;
-	
-			right_header->_prev->_next = current_header;
-			right_footer->_allocated = 0;
-			right_footer->_objectSize = current_header->_objectSize;
-			//pointer = current_header;
-			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
-			right_footer->_objectSize = right_footer->_objectSize + left_footer->_objectSize;
-			
-			left_header->_allocated = 0;
-			right_footer->_allocated = 0;
-			left_header->_next = right_header->_next;
-			right_header->_next->_prev = left_header;
-			pointer = left_header;*///+++++++++++
-			
-			//Code a3:
 			left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize + right_header->_objectSize;
 		
@@ -405,8 +361,9 @@ void freeObject( void * ptr )
 			right_footer->_objectSize = left_header->_objectSize;
 			
 			right_header->_prev->_next = right_header->_next;
-			right_header->_next->_prev = right_header->_prev;							
-			return;
+			right_header->_next->_prev = right_header->_prev;
+			return;							
+			//pointer = left_header;
 				
 	}
 	
