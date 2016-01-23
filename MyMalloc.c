@@ -211,9 +211,9 @@ void * allocateObject( size_t size )
 		//Check if block is large enough for malloc call
 		if(list_ptr->_objectSize >= roundedSize) {
 			flag = 0;
-			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);  
+			size_t remainder = list_ptr->_objectSize - roundedSize;  
 			//Case 1: Split results in second block reuseable
-			if((list_ptr->_objectSize - roundedSize) > 56) flag = 1;	
+			if(remainder > 56) flag = 1;	
 			//Case 2: Split results in second block unuseable, so return entire block
 			else flag = 2;
 
