@@ -213,7 +213,7 @@ void * allocateObject( size_t size )
 			flag = 0;
 			size_t remainder = list_ptr->_objectSize - roundedSize - sizeof(struct ObjectHeader) - sizeof(struct ObjectFooter);  
 			//Case 1: Split results in second block reuseable
-			if(remainder > 8) flag = 1;	
+			if((list_ptr->_objectSize - roundedSize) > 56) flag = 1;	
 			//Case 2: Split results in second block unuseable, so return entire block
 			else flag = 2;
 
@@ -295,7 +295,7 @@ void freeObject( void * ptr )
 {
   // Add your code here
   //Set ptr to head of memory block
-  /*char * mover_head_current = (char*) ptr - sizeof(struct ObjectHeader);
+  char * mover_head_current = (char*) ptr - sizeof(struct ObjectHeader);
   struct ObjectHeader * current_header = (struct ObjectHeader*) mover_head_current;
   
   char * mover_foot_current = mover_head_current + current_header->_objectSize - sizeof(struct ObjectFooter);
@@ -326,7 +326,7 @@ void freeObject( void * ptr )
     /*if(coal_both == 0) {
     	current_header->_allocated = 0;
     	current_footer->_allocated = 0;
-    }
+    }*/
     if(coal_both == 1) {
 		if(coal_right == 1) {
 		
@@ -340,7 +340,7 @@ void freeObject( void * ptr )
 			//current_header->_next->_prev = current_header;
 			right_footer->_allocated = 0;
 			right_footer->_objectSize = current_header->_objectSize;
-			pointer = current_header;
+			pointer = current_header;*/
 			
 			//Remove node from list
 			right_header->_prev->_next = right_header->_next;
@@ -363,8 +363,8 @@ void freeObject( void * ptr )
 			return;
 			//pointer = left_header;
 		} 
-	}*/
-	/*else if(coal_both == 2) {
+	}
+	else if(coal_both == 2) {
 	
 		//Code a1:
 		/*left_header->_allocated = 0;
@@ -375,7 +375,7 @@ void freeObject( void * ptr )
 		
 		left_header->_next = left_header->_next->_next;
 		right_header->_next->_prev = left_header;
-		pointer = left_header;//++++++++
+		pointer = left_header;*///++++++++
 		
 		//Code a2:
 			/*current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
@@ -395,7 +395,7 @@ void freeObject( void * ptr )
 			right_footer->_allocated = 0;
 			left_header->_next = right_header->_next;
 			right_header->_next->_prev = left_header;
-			pointer = left_header;//+++++++++++
+			pointer = left_header;*///+++++++++++
 			
 			//Code a3:
 			left_header->_allocated = 0;
@@ -408,9 +408,9 @@ void freeObject( void * ptr )
 			right_header->_next->_prev = right_header->_prev;							
 			return;
 				
-	}*/
+	}
 	
-	/*int check_sentinel = -1;
+	int check_sentinel = -1;
 	struct ObjectHeader * p = _freeList->_next;
 
 	while(p != _freeList) {
@@ -432,7 +432,7 @@ void freeObject( void * ptr )
 			pointer->_prev = p->_prev;
 			p->_prev->_next = pointer;
 			p->_prev = pointer;
-	}*/
+	}
   return;
 
 }
