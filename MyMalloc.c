@@ -326,15 +326,15 @@ void freeObject( void * ptr )
 	coal_both = coal_left + coal_right;
 	
     if(coal_both == 0) {
-    	/*current_header->_allocated = 0;
-    	current_footer->_allocated = 0;*/
+    	current_header->_allocated = 0;
+    	current_footer->_allocated = 0;
     }
     if(coal_both == 1) {
     	//Coalesce only right block
 		if(coal_right == 1) {
 		
 			//Remove node from list
-			/*right_header->_prev->_next = right_header->_next;
+			right_header->_prev->_next = right_header->_next;
 			right_header->_next->_prev = right_header->_prev;
 			
 			current_header->_objectSize = current_header->_objectSize + right_header->_objectSize;
@@ -342,23 +342,23 @@ void freeObject( void * ptr )
 			
 			right_footer->_objectSize = current_header->_objectSize;
 			right_footer->_allocated = 0;
-			pointer = current_header;*/
+			pointer = current_header;
 			
 		}
 		//Coalesce only left block
 		else if(coal_left == 1) {
-			/*left_header->_allocated = 0;
+			left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize;
 			current_footer->_allocated = 0;
 			current_footer->_objectSize = left_header->_objectSize;
-			return;*/
+			return;
 			//pointer = left_header;
 		} 
 	}
 	//Coalesce block on both sides
 	else if(coal_both == 2) {
 	
-			/*left_header->_allocated = 0;
+			left_header->_allocated = 0;
 			left_header->_objectSize = left_header->_objectSize + current_header->_objectSize + right_header->_objectSize;
 		
 			right_footer->_allocated = 0;
@@ -366,7 +366,7 @@ void freeObject( void * ptr )
 			
 			right_header->_prev->_next = right_header->_next;
 			right_header->_next->_prev = right_header->_prev;
-			return;*/							
+			return;							
 			//pointer = left_header;
 				
 	}
