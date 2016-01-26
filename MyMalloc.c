@@ -281,9 +281,10 @@ void * allocateObject( size_t size )
 		  list_ptr = list_ptr->_prev;
 		  
 		  //Split
-		  split(list_ptr, roundedSize);
-		  pthread_mutex_unlock(&mutex);
-		  return (void*) (list_ptr + 1);
+		  allocateObject( roundedSize);
+		  //split(list_ptr, roundedSize);
+		  //pthread_mutex_unlock(&mutex);
+		  //return (void*) (list_ptr + 1);
 				  
 	}
 	
